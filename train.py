@@ -146,7 +146,7 @@ def pre():
 # def build_dataset():
 #     build_dataset()
 
-def train():
+def run_train():
     print('train')
     documents=pre_train()
     # print(len(documents),'条训练数据')
@@ -154,7 +154,7 @@ def train():
 
     train(documents)
 
-def train_epoch():
+def run_train_epoch():
     documents=pre_train()
     train_epoch(documents)   
 
@@ -173,15 +173,15 @@ def main():
     if args.do=='pre':
         pre()
     elif args.do=='train':
-        train()
+        run_train()
     elif args.do=='train_epoch':
-        train_epoch()
+        run_train_epoch()
     elif args.do=='build_dataset':
         build_dataset()
     elif args.do=='auto':
         pre()
-        train()
-        train_epoch()
+        run_train()
+        run_train_epoch()
 
  
 if __name__ == '__main__':
