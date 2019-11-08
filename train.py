@@ -118,16 +118,20 @@ def train(documents, size=50, epoch_num=1):
     model = Doc2Vec(documents, vector_size=size, window=2, min_count=2, workers=4, epochs=epoch_num)
     model.save('model/doc2vec.model')
     return model
-def train_epoch(documents, size=200, epoch_num=1):
+def train_epoch(documents,epoch_num=1):
     """
     进行迭代
     """
     # model = Doc2Vec(documents, vector_size=size, window=2, min_count=1, workers=4)
     # model.load('model/doc2vec.model')
     model = Doc2Vec.load("model/doc2vec.model")
-    for i in range(epoch_num):
+    for i in tqdm(range(epoch_num)):
+        print("epoch",i)
+        # tte = 37              #total_examples参数更新
+        # model.train(documents, total_examples=tte, epochs=epoch_num)
         model.train(documents, total_examples=model.corpus_count, epochs=epoch_num)
-        model.save('model/doc2vec.model')
+        model.save('model/doc2vec.model_tmp')
+    model.save('model/doc2vec.model')
 
 
 def test(text=''):
@@ -164,9 +168,9 @@ def run_train():
 
     train(documents)
 
-def run_train_epoch():
+def run_train_epoch(epoch=10):
     documents=pre_train()
-    train_epoch(documents)   
+    train_epoch(documents=documents,epoch_num=epoch)   
 
 def run_test(text):
     sims = test(text)
@@ -180,6 +184,7 @@ def main():
     parser.add_argument("--do", type=str, required=True, help="输入运行的类型  (pre,train,train_epoch,build_dataset)")
     # parser.add_argument("-l", "--log", default=False, action="store_true", help="active log info.")
     parser.add_argument("--text", type=str, required=False, help="输入文本")
+    parser.add_argument("--epoch", type=int, required=False, help="运行迭代的次数")
     args = parser.parse_args()
     # print("--address {0}".format(args.code_address))    #args.address会报错，因为指定了dest的值
     # print("--flag {0}".format(args.flag))   #如果命令行中该参数输入的值不在choices列表中，则报错
@@ -190,7 +195,7 @@ def main():
     elif args.do=='train':
         run_train()
     elif args.do=='train_epoch':
-        run_train_epoch()
+        run_train_epoch(epoch=args.epoch)
     elif args.do=='build_dataset':
         build_dataset()
     elif args.do=='test':
