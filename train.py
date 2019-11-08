@@ -6,6 +6,8 @@ from tqdm import tqdm
 import os
 import sys
 import argparse
+import sqlite3
+from db import Db
 def pre_build_dataset (path='data',typen='new'):
     """
     构建训练数据
@@ -173,15 +175,64 @@ def run_train_epoch(epoch=10):
     train_epoch(documents=documents,epoch_num=epoch)   
 
 def run_test(text):
+    print('test 获取预测结果')
     sims = test(text)
     # print(sims)
-    for item in sims:
-        print(item)
+    db_s=False
+    if os.path.exists('data/data.db'):  
+        db=Db()
+        db_s=True
+        print('已经索引数据库,可以直接获取相关文字信息 构建索引 运行" python3 train.py --do db" ')
+    p=[]
+    for tid, sim in sims:
+        # print(item)
+
+        if db_s:
+            text=db.get_node(tid)
+            p.append((tid,sim,text[1]))
+            # print(tid,sim)
+        else:
+            # print(tid,sim)
+            p.append((tid,sim))
+            pass
+    print(p)
+    return p
+
+
+
+def run_db():
+    # run_db_init()
+    if os.path.exists('data/data.db'):   
+        # os.remove("data/data.db")
+        print('data/data.db已经存在 请手动删除')
+        return 
+    
+    db=Db()
+    # if os.path.exists('data/data.db'):
+    db.create_table()
+
+    # if os.path.exists('data/data.db'):
+    # db.create_table()
+    if os.path.exists('data/dataset/data.json'):
+        data=tkit.Json(file_path='data/dataset/data.json').auto_load()
+        # for item in data:
+            # print(item)
+        db.add_nodes(data)
+ 
+    pass
+def run_db_init():
+    if os.path.exists('data/data.db'):   
+        os.remove("data/data.db")
+    db=Db()
+    # if os.path.exists('data/data.db'):
+    db.create_table()
+    
+    pass
 def main():
     parser = argparse.ArgumentParser(usage="运行训练.", description="help info.")
     # parser.add_argument("--address", default=80, help="the port number.", dest="code_address")
     # parser.add_argument("--flag", choices=['.txt', '.jpg', '.xml', '.png'], default=".txt", help="the file type")
-    parser.add_argument("--do", type=str, required=True, help="输入运行的类型  (pre,train,train_epoch,build_dataset)")
+    parser.add_argument("--do", type=str, required=True, help="输入运行的类型  (pre,train,train_epoch,build_dataset,data_txt,test,db )")
     # parser.add_argument("-l", "--log", default=False, action="store_true", help="active log info.")
     parser.add_argument("--text", type=str, required=False, help="输入文本")
     parser.add_argument("--epoch", type=int, required=False, help="运行迭代的次数")
@@ -198,8 +249,12 @@ def main():
         run_train_epoch(epoch=args.epoch)
     elif args.do=='build_dataset':
         build_dataset()
+    elif args.do=='data_txt':
+        data_txt()
     elif args.do=='test':
         run_test(args.text)
+    elif args.do=='db':
+        run_db()
     elif args.do=='auto':
         pre()
         run_train()
