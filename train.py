@@ -1,7 +1,7 @@
 import Terry_toolkit as tkit
 import jieba
 from gensim.test.utils import common_texts
-from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument,TaggedLineDocument
 from tqdm import tqdm
 import os
 import sys
@@ -71,6 +71,33 @@ def build_dataset():
         return []
 
 
+def data_txt():
+    
+    if os.path.exists('data/dataset/data.json'):
+        data=tkit.Json(file_path='data/dataset/data.json').auto_load()
+        # documents=[]
+        print('data_txt')
+        # f=open('mergeTXT.txt','a+')
+        f=open('data/dataset/data.txt','w')
+        for i,item in tqdm(enumerate(data)):
+            new_context = " ".join(item['word_list']) + '\n'
+            f.write(new_context)
+        f.close()
+        return True
+    else:
+        print('data.json不存在')
+        return False
+def pre_train():
+    if os.path.exists('data/dataset/data.txt'):
+        # documents = TaggedLineDocument('data/dataset/data.txt')
+        print("data.txt 文件存在")
+        pass
+    else:
+        data_txt():
+    
+    documents = TaggedLineDocument('data/dataset/data.txt')
+    return documents
+
 
 def file_List(self, path, type='txt'):
     files = []
@@ -116,21 +143,24 @@ def train_epoch(documents, size=200, epoch_num=1):
  
 def pre():
     pre_build_dataset(path='data/data/wiki_zh/')
+# def build_dataset():
+#     build_dataset()
+
 def train():
     print('train')
-    documents=build_dataset()
+    documents=pre_train()
     print(len(documents),'条训练数据')
     print('start train')
     train(documents)
 def train_epoch():
-    documents=build_dataset()
+    documents=pre_train()
     train_epoch(documents)   
 
 def main():
     parser = argparse.ArgumentParser(usage="运行训练.", description="help info.")
     # parser.add_argument("--address", default=80, help="the port number.", dest="code_address")
     # parser.add_argument("--flag", choices=['.txt', '.jpg', '.xml', '.png'], default=".txt", help="the file type")
-    parser.add_argument("--do", type=str, required=True, help="输入运行的类型  (pre,train,train_epoch)")
+    parser.add_argument("--do", type=str, required=True, help="输入运行的类型  (pre,train,train_epoch,build_dataset)")
     # parser.add_argument("-l", "--log", default=False, action="store_true", help="active log info.")
  
     args = parser.parse_args()
@@ -144,6 +174,8 @@ def main():
         train()
     elif args.do=='train_epoch':
         train_epoch()
+    elif args.do=='build_dataset':
+        build_dataset()
     elif args.do=='auto':
         pre()
         train()
