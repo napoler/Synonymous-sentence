@@ -61,7 +61,8 @@ def build_dataset():
     if os.path.exists('data/dataset/data.json'):
         data=tkit.Json(file_path='data/dataset/data.json').auto_load()
         documents=[]
-        for i,item in enumerate(data):
+        print('build_dataset')
+        for i,item in tqdm(enumerate(data)):
             document = TaggedDocument(item['word_list'], tags=[i])
             # yield TaggedDocument(item['word_list'], tags=[i])
             documents.append(document)
