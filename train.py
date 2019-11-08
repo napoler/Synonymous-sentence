@@ -149,7 +149,7 @@ def pre():
 def train():
     print('train')
     documents=pre_train()
-    print(len(documents),'条训练数据')
+    # print(len(documents),'条训练数据')
     print('start train')
     if len(documents)>0:
         train(documents)
