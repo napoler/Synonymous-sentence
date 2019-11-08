@@ -108,7 +108,7 @@ def file_List(self, path, type='txt'):
             files.append(path+file)
     return files
 
-def train(documents, size=5000, epoch_num=1):
+def train(documents, size=50, epoch_num=1):
     """
     执行训练
     """
@@ -129,6 +129,16 @@ def train_epoch(documents, size=200, epoch_num=1):
         model.train(documents, total_examples=model.corpus_count, epochs=epoch_num)
         model.save('model/doc2vec.model')
 
+
+def test(text=''):
+    model_dm = Doc2Vec.load("model/doc2vec.model")
+    text_cut = jieba.cut(text)
+    text_raw = []
+    for i in list(text_cut):
+        text_raw.append(i)
+    inferred_vector_dm = model_dm.infer_vector(text_raw)
+    sims = model_dm.docvecs.most_similar([inferred_vector_dm], topn=10)
+    return sims
 
 
 # # #预处理训练数据
@@ -158,13 +168,18 @@ def run_train_epoch():
     documents=pre_train()
     train_epoch(documents)   
 
+def run_test(text):
+    sims = test(text)
+    # print(sims)
+    for item in sims:
+        print(item)
 def main():
     parser = argparse.ArgumentParser(usage="运行训练.", description="help info.")
     # parser.add_argument("--address", default=80, help="the port number.", dest="code_address")
     # parser.add_argument("--flag", choices=['.txt', '.jpg', '.xml', '.png'], default=".txt", help="the file type")
     parser.add_argument("--do", type=str, required=True, help="输入运行的类型  (pre,train,train_epoch,build_dataset)")
     # parser.add_argument("-l", "--log", default=False, action="store_true", help="active log info.")
- 
+    parser.add_argument("--text", type=str, required=False, help="输入文本")
     args = parser.parse_args()
     # print("--address {0}".format(args.code_address))    #args.address会报错，因为指定了dest的值
     # print("--flag {0}".format(args.flag))   #如果命令行中该参数输入的值不在choices列表中，则报错
@@ -178,6 +193,8 @@ def main():
         run_train_epoch()
     elif args.do=='build_dataset':
         build_dataset()
+    elif args.do=='test':
+        run_test(args.text)
     elif args.do=='auto':
         pre()
         run_train()
