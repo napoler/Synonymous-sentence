@@ -115,7 +115,7 @@ def train(documents, size=200, epoch_num=1):
     print("开始训练")
     tkit.File().mkdir('model')
     # model_dm = Doc2Vec(x_train, min_count=1, window=3, size=size, sample=1e-3, negative=5, workers=4)
-    model = Doc2Vec(documents, vector_size=size, window=2, min_count=1, workers=4)
+    model = Doc2Vec(documents, vector_size=size, window=2, min_count=2, workers=4, epochs=1)
     model.save('model/doc2vec.model')
     return model
 def train_epoch(documents, size=200, epoch_num=1):
