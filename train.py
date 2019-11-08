@@ -117,8 +117,10 @@ def pre():
     pre_build_dataset(path='data/data/wiki_zh/')
 def train():
     print('train')
-    # documents=build_dataset()
-    # train(documents)
+    documents=build_dataset()
+    print(len(documents),'条训练数据')
+    print('start train')
+    train(documents)
 def train_epoch():
     documents=build_dataset()
     train_epoch(documents)   
