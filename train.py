@@ -151,10 +151,9 @@ def train():
     documents=pre_train()
     # print(len(documents),'条训练数据')
     print('start train')
-    if len(documents)>0:
-        train(documents)
-    else:
-        print('end train')
+
+    train(documents)
+
 def train_epoch():
     documents=pre_train()
     train_epoch(documents)   
