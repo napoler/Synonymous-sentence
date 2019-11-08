@@ -93,7 +93,7 @@ def pre_train():
         print("data.txt 文件存在")
         pass
     else:
-        data_txt():
+        data_txt()
     
     documents = TaggedLineDocument('data/dataset/data.txt')
     return documents
@@ -151,7 +151,10 @@ def train():
     documents=pre_train()
     print(len(documents),'条训练数据')
     print('start train')
-    train(documents)
+    if len(documents)>0:
+        train(documents)
+    else:
+        print('end train')
 def train_epoch():
     documents=pre_train()
     train_epoch(documents)   
