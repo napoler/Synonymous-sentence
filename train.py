@@ -96,7 +96,6 @@ def pre_train():
         pass
     else:
         data_txt()
-    
     documents = TaggedLineDocument('data/dataset/data.txt')
     return documents
 
@@ -104,7 +103,6 @@ def pre_train():
 def file_List(self, path, type='txt'):
     files = []
     for file in os.listdir(path):
-
         if file.endswith("." + type):
             print(path+file)
             files.append(path+file)
@@ -126,18 +124,18 @@ def train_epoch(documents,epoch_num=1):
     """
     # model = Doc2Vec(documents, vector_size=size, window=2, min_count=1, workers=4)
     # model.load('model/doc2vec.model')
-    model = Doc2Vec.load("model/doc2vec.model")
+    model = Doc2Vec.load(MODEL_FILE)
     for i in tqdm(range(epoch_num)):
         print("epoch",i)
         # tte = 37              #total_examples参数更新
         # model.train(documents, total_examples=tte, epochs=epoch_num)
         model.train(documents, total_examples=model.corpus_count, epochs=epoch_num)
-        model.save('model/tmp_doc2vec.model')
+        # model.save('model/tmp_doc2vec.model')
     model.save('model/doc2vec.model')
 
 
 def test(text=''):
-    model_dm = Doc2Vec.load("model/doc2vec.model")
+    model_dm = Doc2Vec.load(MODEL_FILE)
     text_cut = jieba.cut(text)
     text_raw = []
     for i in list(text_cut):
@@ -236,13 +234,20 @@ def main():
     # parser.add_argument("-l", "--log", default=False, action="store_true", help="active log info.")
     parser.add_argument("--text", type=str, required=False, help="输入文本")
     parser.add_argument("--epoch", type=int, required=False, help="运行迭代的次数")
-    parser.add_argument("--file", type=str,default= 'data/dataset/data.json', required=False, help="运行迭代的次数")
+    parser.add_argument("--file", type=str,default= 'data/dataset/data.json', required=False, help="自定义训练数据")
+    parser.add_argument("--model", type=str,default= 'model/doc2vec.model', required=False, help="输入之前的模型")
+    # parser.add_argument("--out", type=str,default= 'model/doc2vec.model', required=False, help="输出模型的位置")
     args = parser.parse_args()
     # print("--address {0}".format(args.code_address))    #args.address会报错，因为指定了dest的值
     # print("--flag {0}".format(args.flag))   #如果命令行中该参数输入的值不在choices列表中，则报错
     print("--do {0}".format(args.do))   #prot的类型为int类型，如果命令行中没有输入该选项则报错
     # print("-l {0}".format(args.log))  #如果命令行中输入该参数，则该值为True。因为为短格式"-l"指定了别名"--log"，所以程序中用args.log来访问
-    DATA_FILE= args.file
+    global MODEL_FILE
+    global DATA_FILE
+    global MODEL_OUT
+    MODEL_FILE=args.model
+    DATA_FILE=args.file
+    # MODEL_OUT=args.out
     if args.do=='pre':
         pre()
     elif args.do=='train':
