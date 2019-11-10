@@ -18,10 +18,10 @@ def pre_build_dataset (path='data',typen='new'):
     tkit.File().mkdir('data/dataset')
     if typen == 'new':
         try:
-            os.remove('data/dataset/data.json')
+            os.remove(DATA_FILE)
         except:
             pass
-    dataset=tkit.Json(file_path='data/dataset/data.json')
+    dataset=tkit.Json(file_path=DATA_FILE)
     print("构建训练数据")
     for file_path in tqdm(f_list):
         documents=[]
@@ -60,8 +60,8 @@ def build_dataset():
     """
     读取预处理的数据集
     """
-    if os.path.exists('data/dataset/data.json'):
-        data=tkit.Json(file_path='data/dataset/data.json').auto_load()
+    if os.path.exists(DATA_FILE):
+        data=tkit.Json(file_path=DATA_FILE).auto_load()
         documents=[]
         print('build_dataset')
         for i,item in tqdm(enumerate(data)):
@@ -75,8 +75,8 @@ def build_dataset():
 
 def data_txt():
     
-    if os.path.exists('data/dataset/data.json'):
-        data=tkit.Json(file_path='data/dataset/data.json').auto_load()
+    if os.path.exists(DATA_FILE):
+        data=tkit.Json(file_path=DATA_FILE).auto_load()
         # documents=[]
         print('data_txt')
         # f=open('mergeTXT.txt','a+')
@@ -132,7 +132,7 @@ def train_epoch(documents,epoch_num=1):
         # tte = 37              #total_examples参数更新
         # model.train(documents, total_examples=tte, epochs=epoch_num)
         model.train(documents, total_examples=model.corpus_count, epochs=epoch_num)
-        model.save('model/doc2vec.model_tmp')
+        model.save('model/tmp_doc2vec.model')
     model.save('model/doc2vec.model')
 
 
@@ -213,8 +213,8 @@ def run_db():
 
     # if os.path.exists('data/data.db'):
     # db.create_table()
-    if os.path.exists('data/dataset/data.json'):
-        data=tkit.Json(file_path='data/dataset/data.json').auto_load()
+    if os.path.exists(DATA_FILE):
+        data=tkit.Json(file_path=DATA_FILE).auto_load()
         # for item in data:
             # print(item)
         db.add_nodes(data)
@@ -236,11 +236,13 @@ def main():
     # parser.add_argument("-l", "--log", default=False, action="store_true", help="active log info.")
     parser.add_argument("--text", type=str, required=False, help="输入文本")
     parser.add_argument("--epoch", type=int, required=False, help="运行迭代的次数")
+    parser.add_argument("--file", type=str,default= 'data/dataset/data.json', required=False, help="运行迭代的次数")
     args = parser.parse_args()
     # print("--address {0}".format(args.code_address))    #args.address会报错，因为指定了dest的值
     # print("--flag {0}".format(args.flag))   #如果命令行中该参数输入的值不在choices列表中，则报错
     print("--do {0}".format(args.do))   #prot的类型为int类型，如果命令行中没有输入该选项则报错
     # print("-l {0}".format(args.log))  #如果命令行中输入该参数，则该值为True。因为为短格式"-l"指定了别名"--log"，所以程序中用args.log来访问
+    DATA_FILE= args.file
     if args.do=='pre':
         pre()
     elif args.do=='train':
@@ -260,6 +262,6 @@ def main():
         run_train()
         run_train_epoch()
 
- 
+# DATA_FILE= 'data/dataset/data.json'
 if __name__ == '__main__':
     main()
