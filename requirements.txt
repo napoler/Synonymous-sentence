@@ -30,4 +30,4 @@ soupsieve==1.9.5
 Terry-toolkit==0.0.1.6.2.8.61573104002.917017
 textrank4zh==0.3
 tqdm==4.37.0
-urllib3==1.24.3
+urllib3==1.26.5
